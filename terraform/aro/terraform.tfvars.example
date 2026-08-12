@@ -1,0 +1,31 @@
+subscription_id        = "00000000-0000-0000-0000-000000000000"
+resource_group_name     = "rg-clinical-unit-pilot"
+container_registry_name = "replace-with-foundation-output"
+
+# Optional; defaults to rg-<name-prefix>-aro-<environment>.
+cluster_resource_group_name = null
+
+name_prefix = "clinical-unit"
+environment = "pilot"
+
+# Query this immediately before deployment:
+# az aro get-versions --location eastus2 -o table
+openshift_version = "4.19.21"
+cluster_domain    = "clinical-unit-pilot"
+
+# A Red Hat pull secret is optional for cluster creation but recommended.
+# Supply it through TF_VAR_redhat_pull_secret; do not put it in this file.
+
+api_server_visibility = "Public"
+ingress_visibility    = "Public"
+fips_enabled          = false
+
+control_plane_vm_size = "Standard_D8s_v5"
+worker_vm_size        = "Standard_D4s_v5"
+worker_node_count     = 3
+worker_disk_size_gb   = 128
+
+tags = {
+  owner       = "app-modernization"
+  cost-center = "replace-me"
+}

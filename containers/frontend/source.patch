@@ -1,0 +1,73 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index 8648b7f..9e02825 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -10,7 +10,6 @@ import {
+   UnauthenticatedTemplate,
+ } from "./auth/AuthProvider";
+ import orgLogo from './assets/org.png';
+-import appLogo from './assets/app.png';
+ 
+ function App() {
+   const { isAtBottom } = useScrollDirection();
+diff --git a/src/components/ErrorBoundary.tsx b/src/components/ErrorBoundary.tsx
+index 2fa8ff6..1dc9a7b 100644
+--- a/src/components/ErrorBoundary.tsx
++++ b/src/components/ErrorBoundary.tsx
+@@ -1,4 +1,4 @@
+-import React, { Component, ErrorInfo, ReactNode } from 'react';
++import { Component, ErrorInfo, ReactNode } from 'react';
+ 
+ interface Props {
+   children: ReactNode;
+diff --git a/src/components/PatientId.tsx b/src/components/PatientId.tsx
+index 3d960aa..824e4da 100644
+--- a/src/components/PatientId.tsx
++++ b/src/components/PatientId.tsx
+@@ -14,12 +14,10 @@ interface PatientIdProps {
+ }
+ 
+ export const PatientId: React.FC<PatientIdProps> = ({
+-  patient_id,
+   name,
+   dob,
+   gender,
+   mrn,
+-  visit_id,
+   admit_date,
+   site,
+   bed,
+diff --git a/src/components/UserProfile.tsx b/src/components/UserProfile.tsx
+index b4ba4ba..39f760a 100644
+--- a/src/components/UserProfile.tsx
++++ b/src/components/UserProfile.tsx
+@@ -14,11 +14,14 @@ const UserProfile: React.FC = () => {
+   let displayName;
+   let displayIdentifier;
+   if (user) {
++    const claims = user.idTokenClaims as Record<string, unknown> | undefined;
++    const stringClaim = (name: string) =>
++      typeof claims?.[name] === 'string' ? claims[name] as string : undefined;
+     // console.log('User object:', user);
+     // console.log('User type:', typeof user);
+     // console.log('User stringified:', JSON.stringify(user, null, 2));
+-    displayName = user.name || user.username || user.email || user.displayName || user.preferred_username || 'TBD';
+-    displayIdentifier = user.username || user.email || user.preferred_username || user.sub || user.oid || 'ID not available';
++    displayName = user.name || user.username || stringClaim('email') || stringClaim('preferred_username') || 'TBD';
++    displayIdentifier = user.username || stringClaim('email') || stringClaim('preferred_username') || stringClaim('sub') || stringClaim('oid') || 'ID not available';
+   } else {
+     displayName = 'TBD';
+     displayIdentifier = 'ID not available';
+diff --git a/src/hooks/useScrollDirection.ts b/src/hooks/useScrollDirection.ts
+index e0d55db..9bd2814 100644
+--- a/src/hooks/useScrollDirection.ts
++++ b/src/hooks/useScrollDirection.ts
+@@ -7,7 +7,7 @@ export const useScrollDirection = () => {
+   const [lastScrollY, setLastScrollY] = useState(0);
+ 
+   useEffect(() => {
+-    let scrollTimeout: NodeJS.Timeout;
++    let scrollTimeout: ReturnType<typeof setTimeout>;
+ 
+     const updateScrollDirection = () => {
+       const scrollY = window.scrollY;

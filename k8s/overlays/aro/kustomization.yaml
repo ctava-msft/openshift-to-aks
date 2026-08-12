@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - route.yaml
+patches:
+  - path: service-account-patch.yaml
+images:
+  - name: clinical-unit-frontend
+    newName: REGISTRY_PLACEHOLDER/clinical-unit-frontend
+    newTag: TAG_PLACEHOLDER
+  - name: clinical-unit-backend
+    newName: REGISTRY_PLACEHOLDER/clinical-unit-backend
+    newTag: TAG_PLACEHOLDER

@@ -1,0 +1,16 @@
+.backend/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+
+.env
+*.pem
+*.key
+pull-secret*.json
+
+rendered/

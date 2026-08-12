@@ -1,0 +1,15 @@
+diff --git a/src/cosmosdb_helper.py b/src/cosmosdb_helper.py
+index 8e28a38..3be0a50 100644
+--- a/src/cosmosdb_helper.py
++++ b/src/cosmosdb_helper.py
+@@ -74,10 +74,6 @@ class CosmosDBHelper:
+             document["_id"] = patient_id
+             document["mrn"] = patient_id
+             
+-            # Remove _id from patient_data if it exists to avoid conflicts
+-            if "_id" in document:
+-                del document["_id"]
+-            
+             # Update or insert the document using mrn field
+             self.collection.replace_one({"_id": patient_id}, document, upsert=True)
+             return True

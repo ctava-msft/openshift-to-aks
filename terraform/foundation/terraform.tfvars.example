@@ -1,0 +1,17 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"
+location        = "eastus2"
+name_prefix     = "clinical-unit"
+environment     = "pilot"
+
+# Confirm model availability and quota before applying:
+# az cognitiveservices account list-models --name <account> --resource-group <rg>
+openai_model_name      = "gpt-4o-mini"
+openai_model_version   = null
+openai_deployment_name = "gpt-4o-mini"
+openai_sku_name        = "GlobalStandard"
+openai_capacity        = 10
+
+tags = {
+  owner       = "app-modernization"
+  cost-center = "replace-me"
+}

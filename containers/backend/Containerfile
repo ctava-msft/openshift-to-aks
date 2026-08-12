@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1.7
+FROM python:3.11-slim
+
+COPY --from=ghcr.io/astral-sh/uv:0.8.22 /uv /uvx /bin/
+
+ARG PYTHON_PACKAGE_INDEX=https://pypi.org/simple/
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_HTTP_RETRIES=10 \
+    UV_HTTP_TIMEOUT=60 \
+    UV_LINK_MODE=copy
+
+WORKDIR /app
+
+COPY .migration-build/requirements-runtime.txt ./requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    uv pip install --system --index-url "${PYTHON_PACKAGE_INDEX}" -r requirements.txt
+
+COPY src/ ./
+
+RUN chgrp -R 0 /app \
+    && chmod -R g=u /app
+
+USER 10001
+
+EXPOSE 5000
+
+CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "5000"]

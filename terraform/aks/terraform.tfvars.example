@@ -1,0 +1,26 @@
+subscription_id              = "00000000-0000-0000-0000-000000000000"
+resource_group_name           = "rg-clinical-unit-pilot"
+container_registry_name       = "replace-with-foundation-output"
+log_analytics_workspace_name = "log-clinical-unit-pilot"
+
+name_prefix = "clinical-unit"
+environment = "pilot"
+
+# Null asks Azure for the current regional default.
+kubernetes_version = null
+node_vm_size        = "Standard_D4s_v5"
+node_min_count      = 2
+node_max_count      = 5
+availability_zones  = ["1", "2", "3"]
+
+# Set this to the public CIDR used by administrators in a real deployment.
+api_server_authorized_ip_ranges = []
+
+# Add group or service-principal object IDs as required. The Terraform caller
+# is granted cluster admin automatically.
+cluster_admin_object_ids = []
+
+tags = {
+  owner       = "app-modernization"
+  cost-center = "replace-me"
+}
