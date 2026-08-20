@@ -8,9 +8,15 @@
 crash.log
 crash.*.log
 
+.venv
 .env
 *.pem
 *.key
 pull-secret*.json
 
 rendered/
+
+__pycache__/
+*.py[cod]
+e2e/.auth/
+e2e/artifacts/

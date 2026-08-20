@@ -95,6 +95,45 @@ After deployment, both platforms must report exactly two active application pods
 kubectl get pods -n clinical-unit -l app.kubernetes.io/part-of=clinical-unit
 ```
 
+## Playwright Integration Testing
+
+The standalone Playwright runner validates the frontend health endpoint and document, the backend patient API authentication boundary, and the authenticated MRN search workflow. Use only a synthetic test patient; optional screenshots and traces can contain patient data or authentication material.
+
+Install the runner and Chromium:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r e2e\requirements.txt
+.\.venv\Scripts\python.exe -m playwright install chromium
+```
+
+Run unauthenticated smoke and API security checks against either AKS or ARO:
+
+```powershell
+$env:CLINICAL_UNIT_FRONTEND_URL = 'https://<application-hostname>'
+.\.venv\Scripts\python.exe e2e\clinical_unit_integration.py
+```
+
+Bootstrap an authenticated browser state with an interactive Entra login, then run the synthetic patient workflow:
+
+```powershell
+$env:CLINICAL_UNIT_PATIENT_ID = '<synthetic-test-mrn>'
+.\.venv\Scripts\python.exe e2e\clinical_unit_integration.py `
+  --interactive-login `
+  --require-authenticated-ui `
+  --save-storage-state e2e\.auth\clinical-unit.json
+```
+
+Reuse that state in a later run:
+
+```powershell
+.\.venv\Scripts\python.exe e2e\clinical_unit_integration.py `
+  --storage-state e2e\.auth\clinical-unit.json `
+  --require-authenticated-ui
+```
+
+Set `CLINICAL_UNIT_ACCESS_TOKEN` to a bearer token issued for the backend API to turn the direct API check into an authenticated patient lookup. Reports are written under `e2e/artifacts`; add `--screenshots` or `--trace` only when sensitive diagnostic artifacts are acceptable.
+
 ## Cost Warning
 
 ARO is not a small local-style OpenShift cluster. It creates three control-plane VMs and at least three worker VMs. AKS, ARO, Azure OpenAI, Cosmos DB, and log ingestion incur charges until destroyed. Review every saved plan and follow the runbook cleanup steps after the pilot.
