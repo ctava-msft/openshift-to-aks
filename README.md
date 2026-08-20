@@ -50,6 +50,7 @@ The shared foundation is provisioned once. AKS and ARO are separate Terraform st
 - Azure subscription with quota for the selected cluster and Azure OpenAI model
 - Azure CLI and an authenticated session (`az login`)
 - Terraform `1.8` or newer
+- Node.js `20` or newer for Playwright integration testing
 - Docker
 - `kubectl` and `kubelogin` for Entra-only AKS access; the OpenShift CLI (`oc`) is recommended for ARO administration
 - GitHub SSH access to:
@@ -99,26 +100,26 @@ kubectl get pods -n clinical-unit -l app.kubernetes.io/part-of=clinical-unit
 
 The standalone Playwright runner validates the frontend health endpoint and document, the backend patient API authentication boundary, and the authenticated MRN search workflow. Use only a synthetic test patient; optional screenshots and traces can contain patient data or authentication material.
 
-Install the runner and Chromium:
+Install the locked test dependencies and Chromium:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r e2e\requirements.txt
-.\.venv\Scripts\python.exe -m playwright install chromium
+npm ci
+npm run playwright:install
+npm run typecheck
 ```
 
 Run unauthenticated smoke and API security checks against either AKS or ARO:
 
 ```powershell
 $env:CLINICAL_UNIT_FRONTEND_URL = 'https://<application-hostname>'
-.\.venv\Scripts\python.exe e2e\clinical_unit_integration.py
+npm run test:integration
 ```
 
 Bootstrap an authenticated browser state with an interactive Entra login, then run the synthetic patient workflow:
 
 ```powershell
 $env:CLINICAL_UNIT_PATIENT_ID = '<synthetic-test-mrn>'
-.\.venv\Scripts\python.exe e2e\clinical_unit_integration.py `
+npm run test:integration -- `
   --interactive-login `
   --require-authenticated-ui `
   --save-storage-state e2e\.auth\clinical-unit.json
@@ -127,7 +128,7 @@ $env:CLINICAL_UNIT_PATIENT_ID = '<synthetic-test-mrn>'
 Reuse that state in a later run:
 
 ```powershell
-.\.venv\Scripts\python.exe e2e\clinical_unit_integration.py `
+npm run test:integration -- `
   --storage-state e2e\.auth\clinical-unit.json `
   --require-authenticated-ui
 ```

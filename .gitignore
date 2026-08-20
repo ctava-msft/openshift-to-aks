@@ -1,5 +1,6 @@
 .backend/
 .terraform/
+node_modules/
 *.tfstate
 *.tfstate.*
 *.tfplan
